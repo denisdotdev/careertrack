@@ -19,5 +19,15 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Create a company
+        Company::factory()->create([
+            'name' => 'CareerTrack',
+        ]);
+
+        // Create a location
+        Location::factory()->create([
+            'name' => 'CareerTrack HQ',
+        ]);
     }
 }

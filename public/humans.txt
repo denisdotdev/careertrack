@@ -1,0 +1,7 @@
+/* TEAM */
+    Developer: Denis Lessard
+    Contact: denislessard@protonmail.com
+    X: @denisdotdev
+    From: Montreal, Canada
+
+/* SITE */

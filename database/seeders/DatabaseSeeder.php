@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,9 +26,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'CareerTrack',
         ]);
 
-        // Create a location
-        Location::factory()->create([
-            'name' => 'CareerTrack HQ',
+        // Seed company users with roles
+        $this->call([
+            CompanyUserSeeder::class,
         ]);
     }
 }

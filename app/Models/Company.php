@@ -25,6 +25,11 @@ class Company extends Model
         return $this->hasMany(Announcement::class);
     }
 
+    public function surveys()
+    {
+        return $this->hasMany(Survey::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'company_user')

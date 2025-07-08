@@ -55,6 +55,16 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
+    public function createdSurveys()
+    {
+        return $this->hasMany(Survey::class, 'created_by');
+    }
+
+    public function surveyResponses()
+    {
+        return $this->hasMany(SurveyResponse::class);
+    }
+
     // Role-based methods
 
     /**

@@ -99,6 +99,9 @@ trait HasCompanyRoles
             'manage_users' => $role === 'admin',
             'view_analytics' => in_array($role, ['admin', 'manager']),
             'manage_company_settings' => $role === 'admin',
+            'create_survey' => in_array($role, ['admin', 'manager']),
+            'manage_surveys' => in_array($role, ['admin', 'manager']),
+            'view_survey_results' => in_array($role, ['admin', 'manager']),
             default => false,
         };
     }

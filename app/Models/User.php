@@ -213,4 +213,59 @@ class User extends Authenticatable
     {
         return $this->locations()->where('company_id', $company->id);
     }
+
+    // Notification relationships
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function notificationPreferences()
+    {
+        return $this->hasMany(UserNotificationPreference::class);
+    }
+
+    // Notification methods
+    public function getUnreadNotifications()
+    {
+        return $this->notifications()->unread()->orderBy('created_at', 'desc');
+    }
+
+    public function getUnreadNotificationsCount(): int
+    {
+        return $this->notifications()->unread()->count();
+    }
+
+    public function markAllNotificationsAsRead(): void
+    {
+        $this->notifications()->unread()->update([
+            'status' => 'read',
+            'read_at' => now(),
+        ]);
+    }
+
+    public function getNotificationPreference(Company $company, string $type): ?UserNotificationPreference
+    {
+        return $this->notificationPreferences()
+                    ->where('company_id', $company->id)
+                    ->where('notification_type', $type)
+                    ->first();
+    }
+
+    public function setNotificationPreference(Company $company, string $type, array $settings): UserNotificationPreference
+    {
+        return UserNotificationPreference::updateOrCreate(
+            [
+                'user_id' => $this->id,
+                'company_id' => $company->id,
+                'notification_type' => $type,
+            ],
+            $settings
+        );
+    }
+
+    public function shouldReceiveNotification(Company $company, string $type, string $channel = 'in_app'): bool
+    {
+        return UserNotificationPreference::isEnabled($this, $company, $type, $channel);
+    }
 }

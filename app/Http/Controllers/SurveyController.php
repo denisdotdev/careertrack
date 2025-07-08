@@ -7,6 +7,7 @@ use App\Models\Survey;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyResponse;
 use App\Models\User;
+use App\Services\NotificationService;
 use App\Traits\HasCompanyRoles;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -14,6 +15,13 @@ use Illuminate\Validation\Rule;
 class SurveyController extends Controller
 {
     use HasCompanyRoles;
+
+    protected NotificationService $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
 
     /**
      * Display a listing of surveys for a company.
@@ -88,6 +96,11 @@ class SurveyController extends Controller
                 'order' => $index + 1,
                 'help_text' => $questionData['help_text'] ?? null,
             ]);
+        }
+
+        // Send notifications to eligible users if survey is active
+        if ($survey->status === 'active') {
+            $this->notificationService->sendSurveyAvailableNotifications($survey);
         }
 
         return response()->json([
@@ -343,6 +356,9 @@ class SurveyController extends Controller
         }
 
         $survey->activate();
+
+        // Send notifications to eligible users
+        $this->notificationService->sendSurveyAvailableNotifications($survey);
 
         return response()->json([
             'message' => 'Survey activated successfully',

@@ -35,6 +35,16 @@ class Company extends Model
         return $this->hasMany(Location::class);
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function userNotificationPreferences()
+    {
+        return $this->hasMany(UserNotificationPreference::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'company_user')

@@ -6,5 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Goal extends Model
 {
-    protected $fillable = [];
+    protected $fillable = [
+        'title',
+        'description',
+        'target_date',
+        'status',
+        'priority',
+    ];
 }

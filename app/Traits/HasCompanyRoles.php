@@ -102,7 +102,29 @@ trait HasCompanyRoles
             'create_survey' => in_array($role, ['admin', 'manager']),
             'manage_surveys' => in_array($role, ['admin', 'manager']),
             'view_survey_results' => in_array($role, ['admin', 'manager']),
+            'manage_locations' => in_array($role, ['admin', 'manager']),
+            'view_locations' => in_array($role, ['admin', 'manager', 'member', 'viewer']),
             default => false,
         };
+    }
+
+    /**
+     * Check if user can manage locations in a company
+     */
+    protected function userCanManageLocations(User $user, Company $company): bool
+    {
+        return $this->userIsAdminInCompany($company) || 
+               $this->userIsManagerInCompany($company);
+    }
+
+    /**
+     * Check if user can view locations in a company
+     */
+    protected function userCanViewLocations(User $user, Company $company): bool
+    {
+        return $this->userHasRoleInCompany($company, 'admin') ||
+               $this->userHasRoleInCompany($company, 'manager') ||
+               $this->userHasRoleInCompany($company, 'member') ||
+               $this->userHasRoleInCompany($company, 'viewer');
     }
 } 

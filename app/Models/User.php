@@ -65,6 +65,13 @@ class User extends Authenticatable
         return $this->hasMany(SurveyResponse::class);
     }
 
+    public function locations()
+    {
+        return $this->belongsToMany(Location::class, 'location_user')
+                    ->withPivot('is_primary', 'assigned_at')
+                    ->withTimestamps();
+    }
+
     // Role-based methods
 
     /**
@@ -148,5 +155,62 @@ class User extends Authenticatable
         $this->companies()->updateExistingPivot($company->id, [
             'role' => $role,
         ]);
+    }
+
+    // Location management methods
+
+    /**
+     * Add user to a location
+     */
+    public function addToLocation(Location $location, bool $isPrimary = false): void
+    {
+        $this->locations()->attach($location->id, [
+            'is_primary' => $isPrimary,
+            'assigned_at' => now(),
+        ]);
+    }
+
+    /**
+     * Remove user from a location
+     */
+    public function removeFromLocation(Location $location): void
+    {
+        $this->locations()->detach($location->id);
+    }
+
+    /**
+     * Get user's primary location
+     */
+    public function getPrimaryLocation()
+    {
+        return $this->locations()->wherePivot('is_primary', true)->first();
+    }
+
+    /**
+     * Check if user has a primary location
+     */
+    public function hasPrimaryLocation(): bool
+    {
+        return $this->locations()->wherePivot('is_primary', true)->exists();
+    }
+
+    /**
+     * Set a location as primary for the user
+     */
+    public function setPrimaryLocation(Location $location): void
+    {
+        // Remove primary from all other locations
+        $this->locations()->updateExistingPivot($this->locations->pluck('id'), ['is_primary' => false]);
+        
+        // Set this location as primary
+        $this->locations()->updateExistingPivot($location->id, ['is_primary' => true]);
+    }
+
+    /**
+     * Get all locations for a specific company
+     */
+    public function getLocationsForCompany(Company $company)
+    {
+        return $this->locations()->where('company_id', $company->id);
     }
 }

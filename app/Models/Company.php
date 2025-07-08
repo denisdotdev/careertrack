@@ -30,6 +30,11 @@ class Company extends Model
         return $this->hasMany(Survey::class);
     }
 
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'company_user')

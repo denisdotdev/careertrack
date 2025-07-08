@@ -8,7 +8,11 @@ class Announcement extends Model
 {
     protected $fillable = [
         'title',
-        'content'
+        'content',
+        'company_id',
+        'status',
+        'priority',
+        'published_at',
     ];
 
     // Relationships

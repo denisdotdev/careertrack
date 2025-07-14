@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "careertrack/careertrack",
     "type": "project",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": [
         "laravel",

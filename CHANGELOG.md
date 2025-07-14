@@ -1,9 +1,18 @@
 # Changelog
 
-## [0.6.0] - 2025-07-14
+## [0.7.0] - 2025-07-14
 
 ### Changed
 - Automated version bump
+# [0.7.0](https://github.com/denisdotdev/careertrack/compare/v0.6.0...v0.7.0) (2025-07-14)
+
+
+### Features
+
+* update branch properly ([c574d8a](https://github.com/denisdotdev/careertrack/commit/c574d8a06fe569ee6aee37f126b1f733364109b4))
+
+
+
 # [0.6.0](https://github.com/denisdotdev/careertrack/compare/v0.5.0...v0.6.0) (2025-07-14)
 
 

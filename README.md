@@ -205,6 +205,7 @@ Follow the conventional commit format for automatic versioning:
 - Changelog is automatically generated and updated
 - GitHub releases are created when pushing to main branch
 - Git tags are created for each version
+- Version changes are automatically synced to the develop branch
 - Versioning only occurs on the main branch for safety
 
 ## 📚 API Documentation

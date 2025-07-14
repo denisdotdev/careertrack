@@ -96,6 +96,44 @@ composer test
 composer test -- --coverage
 ```
 
+## 🔄 Versioning
+
+This project uses automatic semantic versioning based on [Conventional Commits](https://www.conventionalcommits.org/). The versioning system automatically:
+
+- **Bumps patch version** (0.1.0 → 0.1.1) for bug fixes and `hotfix/*` branches
+- **Bumps minor version** (0.1.0 → 0.2.0) for new features and `feature/*` branches  
+- **Bumps major version** (0.1.0 → 1.0.0) for breaking changes and `release/*` branches
+
+### Commit Message Format
+
+Follow the conventional commit format for automatic versioning:
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Examples:**
+- `feat: add user authentication system` (bumps minor)
+- `fix: resolve login validation issue` (bumps patch)
+- `feat!: remove deprecated API` (bumps major - breaking change)
+
+### Branch Naming
+
+- `feature/*` - New features (bumps minor version)
+- `hotfix/*` - Bug fixes (bumps patch version)
+- `release/*` - Major releases (bumps major version)
+
+### Automatic Actions
+
+- Version numbers are automatically updated in both `composer.json` and `package.json`
+- Changelog is automatically generated and updated
+- GitHub releases are created for main branch deployments
+- Git tags are created for each version
+
 ## 📚 API Documentation
 
 API documentation is available at `/api/documentation` when running in development mode.

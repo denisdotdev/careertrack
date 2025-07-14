@@ -1,0 +1,190 @@
+name: Automatic Versioning
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      - develop
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo, phar, tokenizer, xml, zip
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          npm ci
+
+      - name: Determine version bump
+        id: version-bump
+        run: |
+          # Get the current version from composer.json
+          CURRENT_VERSION=$(node -p "require('./composer.json').version")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Determine version bump based on branch name and commit messages
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Branch: $BRANCH_NAME"
+          
+          # Check if this is a feature branch
+          if [[ "$BRANCH_NAME" == feature/* ]]; then
+            BUMP_TYPE="minor"
+            echo "Feature branch detected - bumping minor version"
+          elif [[ "$BRANCH_NAME" == hotfix/* ]]; then
+            BUMP_TYPE="patch"
+            echo "Hotfix branch detected - bumping patch version"
+          elif [[ "$BRANCH_NAME" == release/* ]]; then
+            BUMP_TYPE="major"
+            echo "Release branch detected - bumping major version"
+          else
+            # Check commit messages for conventional commits
+            COMMIT_MESSAGES=$(git log --oneline -10)
+            echo "Recent commits:"
+            echo "$COMMIT_MESSAGES"
+            
+            if echo "$COMMIT_MESSAGES" | grep -q "BREAKING CHANGE\|!:"; then
+              BUMP_TYPE="major"
+              echo "Breaking change detected - bumping major version"
+            elif echo "$COMMIT_MESSAGES" | grep -q "feat:"; then
+              BUMP_TYPE="minor"
+              echo "Feature detected - bumping minor version"
+            elif echo "$COMMIT_MESSAGES" | grep -q "fix:"; then
+              BUMP_TYPE="patch"
+              echo "Fix detected - bumping patch version"
+            else
+              BUMP_TYPE="patch"
+              echo "Default bump - patch version"
+            fi
+          fi
+          
+          echo "bump-type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+
+      - name: Bump version
+        id: bump-version
+        run: |
+          # Install semver tool
+          npm install -g semver
+          
+          CURRENT_VERSION=$(node -p "require('./composer.json').version")
+          BUMP_TYPE="${{ steps.version-bump.outputs.bump-type }}"
+          
+          # Calculate new version
+          NEW_VERSION=$(semver -i $BUMP_TYPE $CURRENT_VERSION)
+          echo "New version: $NEW_VERSION"
+          echo "new-version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          
+          # Update composer.json
+          node -e "
+            const fs = require('fs');
+            const composer = JSON.parse(fs.readFileSync('composer.json', 'utf8'));
+            composer.version = '$NEW_VERSION';
+            fs.writeFileSync('composer.json', JSON.stringify(composer, null, 4) + '\n');
+          "
+          
+          # Update package.json
+          node -e "
+            const fs = require('fs');
+            const package = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            package.version = '$NEW_VERSION';
+            fs.writeFileSync('package.json', JSON.stringify(package, null, 4) + '\n');
+          "
+          
+          echo "Updated version to $NEW_VERSION in both composer.json and package.json"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Install conventional-changelog-cli
+          npm install -g conventional-changelog-cli
+          
+          # Generate changelog
+          conventional-changelog -p angular -i CHANGELOG.md -s -r 0 > temp_changelog.md
+          
+          # If changelog is empty, create a basic one
+          if [ ! -s temp_changelog.md ]; then
+            echo "# Changelog" > temp_changelog.md
+            echo "" >> temp_changelog.md
+            echo "## [${{ steps.bump-version.outputs.new-version }}] - $(date +%Y-%m-%d)" >> temp_changelog.md
+            echo "" >> temp_changelog.md
+            echo "### Changed" >> temp_changelog.md
+            echo "- Automated version bump" >> temp_changelog.md
+          fi
+          
+          # Prepend to existing changelog
+          if [ -f CHANGELOG.md ]; then
+            cat temp_changelog.md CHANGELOG.md > temp_combined.md
+            mv temp_combined.md CHANGELOG.md
+          else
+            mv temp_changelog.md CHANGELOG.md
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add composer.json package.json CHANGELOG.md
+          git commit -m "chore: bump version to ${{ steps.bump-version.outputs.new-version }} [skip ci]"
+          git tag -a "v${{ steps.bump-version.outputs.new-version }}" -m "Version ${{ steps.bump-version.outputs.new-version }}"
+          
+          git push origin HEAD:${{ github.ref }}
+          git push origin "v${{ steps.bump-version.outputs.new-version }}"
+
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.bump-version.outputs.new-version }}
+          release_name: Release v${{ steps.bump-version.outputs.new-version }}
+          body: |
+            ## What's Changed
+            
+            This release includes the following changes:
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Installation
+            
+            ```bash
+            composer install
+            npm install
+            ```
+            
+            ## Development
+            
+            ```bash
+            composer run dev
+            ```
+          draft: false
+          prerelease: false 

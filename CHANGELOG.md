@@ -1,9 +1,18 @@
 # Changelog
 
-## [0.7.0] - 2025-07-14
+## [0.8.0] - 2025-07-14
 
 ### Changed
 - Automated version bump
+# [0.8.0](https://github.com/denisdotdev/careertrack/compare/v0.7.0...v0.8.0) (2025-07-14)
+
+
+### Bug Fixes
+
+* remove versioning from pr close ([35e3d34](https://github.com/denisdotdev/careertrack/commit/35e3d34128ab65df2d24f6bb72df3af52a5ab38c))
+
+
+
 # [0.7.0](https://github.com/denisdotdev/careertrack/compare/v0.6.0...v0.7.0) (2025-07-14)
 
 

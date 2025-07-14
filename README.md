@@ -98,11 +98,11 @@ composer test -- --coverage
 
 ## 🔄 Versioning
 
-This project uses automatic semantic versioning based on [Conventional Commits](https://www.conventionalcommits.org/). The versioning system automatically:
+This project uses automatic semantic versioning based on [Conventional Commits](https://www.conventionalcommits.org/). The versioning system automatically runs on the main branch and:
 
-- **Bumps patch version** (0.1.0 → 0.1.1) for bug fixes and `hotfix/*` branches
-- **Bumps minor version** (0.1.0 → 0.2.0) for new features and `feature/*` branches  
-- **Bumps major version** (0.1.0 → 1.0.0) for breaking changes and `release/*` branches
+- **Bumps patch version** (0.1.0 → 0.1.1) for bug fixes (`fix:` commits)
+- **Bumps minor version** (0.1.0 → 0.2.0) for new features (`feat:` commits)  
+- **Bumps major version** (0.1.0 → 1.0.0) for breaking changes (`BREAKING CHANGE` or `!:` commits)
 
 ### Commit Message Format
 
@@ -123,16 +123,17 @@ Follow the conventional commit format for automatic versioning:
 
 ### Branch Naming
 
-- `feature/*` - New features (bumps minor version)
-- `hotfix/*` - Bug fixes (bumps patch version)
-- `release/*` - Major releases (bumps major version)
+- `feature/*` - New features (use `feat:` commits)
+- `hotfix/*` - Bug fixes (use `fix:` commits)
+- `release/*` - Major releases (use `BREAKING CHANGE` commits)
 
 ### Automatic Actions
 
 - Version numbers are automatically updated in both `composer.json` and `package.json`
 - Changelog is automatically generated and updated
-- GitHub releases are created for main branch deployments
+- GitHub releases are created when pushing to main branch
 - Git tags are created for each version
+- Versioning only occurs on the main branch for safety
 
 ## 📚 API Documentation
 

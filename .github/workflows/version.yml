@@ -4,15 +4,10 @@ on:
   push:
     branches:
       - main
-      - develop
-      - feature/*
-      - hotfix/*
-      - release/*
   pull_request:
     types: [closed]
     branches:
       - main
-      - develop
 
 permissions:
   contents: write
@@ -24,7 +19,8 @@ jobs:
     if: |
       (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) &&
       !contains(github.event.head_commit.message, '[skip ci]') &&
-      github.actor != 'github-actions[bot]'
+      github.actor != 'github-actions[bot]' &&
+      github.ref == 'refs/heads/main'
     
     steps:
       - name: Checkout code
@@ -58,39 +54,23 @@ jobs:
           CURRENT_VERSION=$(node -p "require('./composer.json').version")
           echo "Current version: $CURRENT_VERSION"
           
-          # Determine version bump based on branch name and commit messages
-          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-          echo "Branch: $BRANCH_NAME"
+          # Check commit messages for conventional commits
+          COMMIT_MESSAGES=$(git log --oneline -10)
+          echo "Recent commits:"
+          echo "$COMMIT_MESSAGES"
           
-          # Check if this is a feature branch
-          if [[ "$BRANCH_NAME" == feature/* ]]; then
-            BUMP_TYPE="minor"
-            echo "Feature branch detected - bumping minor version"
-          elif [[ "$BRANCH_NAME" == hotfix/* ]]; then
-            BUMP_TYPE="patch"
-            echo "Hotfix branch detected - bumping patch version"
-          elif [[ "$BRANCH_NAME" == release/* ]]; then
+          if echo "$COMMIT_MESSAGES" | grep -q "BREAKING CHANGE\|!:"; then
             BUMP_TYPE="major"
-            echo "Release branch detected - bumping major version"
+            echo "Breaking change detected - bumping major version"
+          elif echo "$COMMIT_MESSAGES" | grep -q "feat:"; then
+            BUMP_TYPE="minor"
+            echo "Feature detected - bumping minor version"
+          elif echo "$COMMIT_MESSAGES" | grep -q "fix:"; then
+            BUMP_TYPE="patch"
+            echo "Fix detected - bumping patch version"
           else
-            # Check commit messages for conventional commits
-            COMMIT_MESSAGES=$(git log --oneline -10)
-            echo "Recent commits:"
-            echo "$COMMIT_MESSAGES"
-            
-            if echo "$COMMIT_MESSAGES" | grep -q "BREAKING CHANGE\|!:"; then
-              BUMP_TYPE="major"
-              echo "Breaking change detected - bumping major version"
-            elif echo "$COMMIT_MESSAGES" | grep -q "feat:"; then
-              BUMP_TYPE="minor"
-              echo "Feature detected - bumping minor version"
-            elif echo "$COMMIT_MESSAGES" | grep -q "fix:"; then
-              BUMP_TYPE="patch"
-              echo "Fix detected - bumping patch version"
-            else
-              BUMP_TYPE="patch"
-              echo "Default bump - patch version"
-            fi
+            BUMP_TYPE="patch"
+            echo "Default bump - patch version"
           fi
           
           echo "bump-type=$BUMP_TYPE" >> $GITHUB_OUTPUT

@@ -1,9 +1,18 @@
 # Changelog
 
-## [0.4.0] - 2025-07-14
+## [0.5.0] - 2025-07-14
 
 ### Changed
 - Automated version bump
+# [0.5.0](https://github.com/denisdotdev/careertrack/compare/v0.4.0...v0.5.0) (2025-07-14)
+
+
+### Features
+
+* add docker support ([0bbc55a](https://github.com/denisdotdev/careertrack/commit/0bbc55ae9b78245a934faeffb6c443b467daf802))
+
+
+
 # [0.4.0](https://github.com/denisdotdev/careertrack/compare/v0.3.0...v0.4.0) (2025-07-14)
 
 

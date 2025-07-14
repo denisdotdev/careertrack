@@ -149,7 +149,8 @@ jobs:
           # Use the token for authentication
           git remote set-url origin https://x-access-token:$GITHUB_TOKEN@github.com/${{ github.repository }}
           
-          git push origin HEAD:${{ github.ref }}
+          # Push changes and tag (force push for version bump)
+          git push --force-with-lease origin HEAD:${{ github.ref }}
           git push origin "v${{ steps.bump-version.outputs.new-version }}"
 
       - name: Sync version to develop branch

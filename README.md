@@ -33,48 +33,76 @@ A modern career development and goal tracking platform built with Laravel, desig
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repository
+### Option 1: Docker (Recommended)
+
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/denisdotdev/careertrack.git
 cd careertrack
 ```
 
-### 2. Install Dependencies
+#### 2. Build and Run with Docker
+
+```bash
+# Production build
+docker-compose up -d
+
+# Or for development
+docker-compose --profile dev up -d
+```
+
+#### 3. Access the Application
+
+- **Production**: http://localhost:8000
+- **Development**: http://localhost:8001
+
+#### 4. Run Migrations (if needed)
+
+```bash
+docker-compose exec app php artisan migrate
+```
+
+### Option 2: Local Development
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/denisdotdev/careertrack.git
+cd careertrack
+```
+
+#### 2. Install Dependencies
 
 ```bash
 composer install
 npm install
 ```
 
-### 3. Environment Setup
+#### 3. Environment Setup
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### 4. Configure Database
+#### 4. Configure Database
 
 Edit your `.env` file with your database credentials:
 
 ```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=careertrack
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
 ```
 
-### 5. Run Migrations & Seeders
+#### 5. Run Migrations & Seeders
 
 ```bash
 php artisan migrate
 php artisan db:seed
 ```
 
-### 6. Start Development Server
+#### 6. Start Development Server
 
 ```bash
 # Using Laravel's built-in server
@@ -94,6 +122,50 @@ composer test
 
 # Run tests with coverage
 composer test -- --coverage
+
+# Run tests in Docker
+docker-compose exec app php artisan test
+```
+
+## 🐳 Docker
+
+### Production Build
+
+```bash
+# Build and run production container
+docker-compose up -d
+
+# View logs
+docker-compose logs -f app
+
+# Stop containers
+docker-compose down
+```
+
+### Development Build
+
+```bash
+# Build and run development container
+docker-compose --profile dev up -d
+
+# Access development environment
+docker-compose exec app-dev bash
+
+# Run artisan commands
+docker-compose exec app-dev php artisan migrate
+```
+
+### Custom Docker Commands
+
+```bash
+# Build image only
+docker build -t careertrack .
+
+# Run container with custom port
+docker run -p 8080:80 careertrack
+
+# Run with environment variables
+docker run -p 8080:80 -e APP_ENV=local careertrack
 ```
 
 ## 🔄 Versioning

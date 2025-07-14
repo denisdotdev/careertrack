@@ -10,11 +10,14 @@ services:
     restart: unless-stopped
     ports:
       - "8000:80"
+      - "8443:443"
     volumes:
       # Mount storage for persistence
       - ./storage:/var/www/html/storage
       # Mount database for development
       - ./database:/var/www/html/database
+      # Mount trusted SSL certificates
+      - ./ssl:/etc/nginx/ssl:ro
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
@@ -37,6 +40,7 @@ services:
     restart: unless-stopped
     ports:
       - "8001:8000"
+      - "8444:443"
     volumes:
       - .:/var/www/html
       - ./storage:/var/www/html/storage

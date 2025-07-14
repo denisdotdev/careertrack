@@ -54,8 +54,10 @@ docker-compose --profile dev up -d
 
 #### 3. Access the Application
 
-- **Production**: http://localhost:8000
-- **Development**: http://localhost:8001
+- **Production (HTTP)**: http://localhost:8000
+- **Production (HTTPS)**: https://localhost:8443
+- **Development (HTTP)**: http://localhost:8001
+- **Development (HTTPS)**: https://localhost:8444
 
 #### 4. Run Migrations (if needed)
 
@@ -132,8 +134,11 @@ docker-compose exec app php artisan test
 ### Production Build
 
 ```bash
-# Build and run production container
+# Build and run production container (HTTP)
 docker-compose up -d
+
+# Build and run production container (HTTPS)
+docker-compose -f docker-compose.prod.yml up -d
 
 # View logs
 docker-compose logs -f app
@@ -141,6 +146,33 @@ docker-compose logs -f app
 # Stop containers
 docker-compose down
 ```
+
+### HTTPS Setup
+
+#### Development (Self-signed certificates)
+```bash
+# HTTPS is automatically enabled with self-signed certificates
+docker-compose up -d
+# Access: https://localhost:8443
+```
+
+#### Production (Custom certificates)
+```bash
+# Create SSL directory and add your certificates
+mkdir -p ssl
+cp your-cert.pem ssl/cert.pem
+cp your-key.pem ssl/key.pem
+
+# Set proper permissions
+chmod 644 ssl/cert.pem
+chmod 600 ssl/key.pem
+
+# Run with production compose file
+docker-compose -f docker-compose.prod.yml up -d
+# Access: https://yourdomain.com
+```
+
+**⚠️ Security Note:** SSL certificates are not committed to this repository for security reasons. See `ssl/README.md` for detailed setup instructions.
 
 ### Development Build
 

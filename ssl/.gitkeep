@@ -1,0 +1,2 @@
+# This file ensures the ssl directory is created when cloning the repository
+# Actual SSL certificates (*.pem files) are ignored by .gitignore for security 

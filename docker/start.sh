@@ -13,5 +13,5 @@ if [ -f /var/www/html/database/database.sqlite ]; then
 fi
 
 # Start Nginx in foreground
-echo "Starting Nginx..."
+echo "Starting Nginx with HTTPS..."
 nginx -g "daemon off;" 

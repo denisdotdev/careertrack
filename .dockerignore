@@ -1,0 +1,58 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+SECURITY.md
+
+# Development files
+.env
+.env.local
+.env.development
+.env.testing
+.phpunit.result.cache
+
+# Dependencies (will be installed in container)
+node_modules/
+vendor/
+
+# Build artifacts
+public/build/
+public/hot/
+public/storage/
+
+# Logs
+storage/logs/
+*.log
+
+# Cache
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+bootstrap/cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files (except Dockerfile)
+docker-compose*.yml
+docker-compose*.yaml
+
+# Test files
+tests/
+phpunit.xml
+
+# GitHub Actions
+.github/ 

@@ -1,9 +1,13 @@
 # Changelog
 
-## [0.3.0] - 2025-07-14
+## [0.4.0] - 2025-07-14
 
 ### Changed
 - Automated version bump
+# [0.4.0](https://github.com/denisdotdev/careertrack/compare/v0.3.0...v0.4.0) (2025-07-14)
+
+
+
 # [0.3.0](https://github.com/denisdotdev/careertrack/compare/v0.2.0...v0.3.0) (2025-07-14)
 
 

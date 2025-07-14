@@ -1,23 +1,21 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
-
-### Added
-- Automatic versioning system
-- Conventional commit support
-- Automated changelog generation
+## [0.2.0] - 2025-07-14
 
 ### Changed
-- Updated project structure for semantic versioning
+- Automated version bump
+# 0.2.0 (2025-07-14)
 
-## [0.1.0] - 2024-01-01
 
-### Added
-- Initial project setup
-- Laravel framework integration
-- Basic project structure
+### Bug Fixes
+
+* fix auth ([e676be3](https://github.com/denisdotdev/careertrack/commit/e676be3b6b4b77c6479aa77afcdce509be185547))
+* versioning ([5f45c45](https://github.com/denisdotdev/careertrack/commit/5f45c45893356cfb69a4530632489e0cd9a7f67e))
+
+
+### Features
+
+* add semver to project ([4046924](https://github.com/denisdotdev/careertrack/commit/4046924d19fea63bd81f2390c1e6ff5b44ef8912))
+
+
+

@@ -1,9 +1,19 @@
 # Changelog
 
-## [0.8.0] - 2025-07-14
+## [0.8.1] - 2025-07-14
 
 ### Changed
 - Automated version bump
+## [0.8.1](https://github.com/denisdotdev/careertrack/compare/v0.8.0...v0.8.1) (2025-07-14)
+
+
+### Bug Fixes
+
+* docker with https ([6596314](https://github.com/denisdotdev/careertrack/commit/659631423771d366ee8e8e0601fd5a72221fcba6))
+* ssl secret files ([94c0b67](https://github.com/denisdotdev/careertrack/commit/94c0b672e49316ffb1c153212828ab469b9a6a1f))
+
+
+
 # [0.8.0](https://github.com/denisdotdev/careertrack/compare/v0.7.0...v0.8.0) (2025-07-14)
 
 

@@ -159,14 +159,20 @@ docker-compose up -d
 #### Production (Custom certificates)
 ```bash
 # Create SSL directory and add your certificates
-mkdir ssl
+mkdir -p ssl
 cp your-cert.pem ssl/cert.pem
 cp your-key.pem ssl/key.pem
+
+# Set proper permissions
+chmod 644 ssl/cert.pem
+chmod 600 ssl/key.pem
 
 # Run with production compose file
 docker-compose -f docker-compose.prod.yml up -d
 # Access: https://yourdomain.com
 ```
+
+**⚠️ Security Note:** SSL certificates are not committed to this repository for security reasons. See `ssl/README.md` for detailed setup instructions.
 
 ### Development Build
 

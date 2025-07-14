@@ -22,3 +22,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# SSL Certificates - Never commit these to public repositories
+ssl/*.pem
+ssl/cert.pem
+ssl/key.pem
+*.pem
+*.key
+*.crt

@@ -94,7 +94,8 @@ RUN apk add --no-cache \
     oniguruma-dev \
     freetype-dev \
     libjpeg-turbo-dev \
-    libzip-dev
+    libzip-dev \
+    openssl
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -146,7 +147,12 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/default.conf /etc/nginx/conf.d/default.conf
+COPY docker/default-ssl.conf /etc/nginx/conf.d/default.conf
+COPY docker/ssl.conf /etc/nginx/ssl.conf
+
+# Copy and generate SSL certificates (production stage only)
+COPY docker/generate-ssl.sh /generate-ssl.sh
+RUN chmod +x /generate-ssl.sh && /generate-ssl.sh
 
 # Copy startup script
 COPY docker/start.sh /start.sh

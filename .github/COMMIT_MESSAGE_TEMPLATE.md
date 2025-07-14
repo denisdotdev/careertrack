@@ -68,3 +68,4 @@ For automatic versioning based on branch names:
 3. Don't add a period at the end of the subject line
 4. Separate subject from body with a blank line
 5. Use the body to explain what and why vs. how 
+6. Keep it clean!

@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: careertrack-ssl-cert
+  namespace: careertrack
+spec:
+  domains:
+  - careertrack.yourdomain.com  # Replace with your actual domain

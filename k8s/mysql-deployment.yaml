@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: careertrack-mysql
+  namespace: careertrack
+  labels:
+    app: careertrack-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: careertrack-mysql
+  template:
+    metadata:
+      labels:
+        app: careertrack-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: DB_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: DB_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: DB_USERNAME
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: DB_PASSWORD
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+            - -u
+            - root
+            - -p$(MYSQL_ROOT_PASSWORD)
+          initialDelaySeconds: 5
+          periodSeconds: 2
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: careertrack-mysql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: careertrack-mysql
+  namespace: careertrack
+  labels:
+    app: careertrack-mysql
+spec:
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: careertrack-mysql
+  type: ClusterIP

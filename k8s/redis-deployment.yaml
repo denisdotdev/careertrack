@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: careertrack-redis
+  namespace: careertrack
+  labels:
+    app: careertrack-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: careertrack-redis
+  template:
+    metadata:
+      labels:
+        app: careertrack-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        ports:
+        - containerPort: 6379
+        command:
+        - redis-server
+        - --appendonly
+        - yes
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: REDIS_PASSWORD
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "250m"
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - -a
+            - $(REDIS_PASSWORD)
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - -a
+            - $(REDIS_PASSWORD)
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 2
+      volumes:
+      - name: redis-data
+        persistentVolumeClaim:
+          claimName: careertrack-redis-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: careertrack-redis
+  namespace: careertrack
+  labels:
+    app: careertrack-redis
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: careertrack-redis
+  type: ClusterIP

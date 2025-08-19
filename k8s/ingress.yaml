@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: careertrack-ingress
+  namespace: careertrack
+  annotations:
+    kubernetes.io/ingress.class: "gce"  # For Google Cloud Load Balancer
+    kubernetes.io/ingress.global-static-ip-name: "careertrack-ip"  # Reserve static IP
+    networking.gke.io/managed-certificates: "careertrack-ssl-cert"  # Auto-managed SSL
+    networking.gke.io/v1beta1.FrontendConfig: "careertrack-frontend-config"
+    # Alternative for manual SSL:
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # cert-manager.io/common-name: "careertrack.yourdomain.com"
+spec:
+  rules:
+  - host: careertrack.yourdomain.com  # Replace with your actual domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: careertrack-app
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - careertrack.yourdomain.com  # Replace with your actual domain
+    secretName: careertrack-tls  # Only needed for manual SSL
+---
+# Frontend config for Google Cloud Load Balancer
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: careertrack-frontend-config
+  namespace: careertrack
+spec:
+  redirectToHttps:
+    enabled: true
+  sslPolicy: "modern"  # Use modern SSL policy

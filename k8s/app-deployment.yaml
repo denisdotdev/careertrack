@@ -1,0 +1,197 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: careertrack-app
+  namespace: careertrack
+  labels:
+    app: careertrack-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: careertrack-app
+  template:
+    metadata:
+      labels:
+        app: careertrack-app
+    spec:
+      containers:
+      - name: app
+        image: careertrack:latest  # You'll need to build and push this image
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        env:
+        - name: APP_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: APP_ENV
+        - name: APP_DEBUG
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: APP_DEBUG
+        - name: APP_URL
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: APP_URL
+        - name: APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: APP_KEY
+        - name: DB_CONNECTION
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: DB_CONNECTION
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: DB_PORT
+        - name: DB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: DB_DATABASE
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: DB_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: DB_PASSWORD
+        - name: CACHE_DRIVER
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: CACHE_DRIVER
+        - name: SESSION_DRIVER
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: SESSION_DRIVER
+        - name: QUEUE_CONNECTION
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: QUEUE_CONNECTION
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: REDIS_PORT
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: REDIS_PASSWORD
+        - name: MAIL_MAILER
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: MAIL_MAILER
+        - name: MAIL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: MAIL_HOST
+        - name: MAIL_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: MAIL_PORT
+        - name: MAIL_ENCRYPTION
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: MAIL_ENCRYPTION
+        - name: MAIL_FROM_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: MAIL_FROM_ADDRESS
+        - name: MAIL_FROM_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: MAIL_FROM_NAME
+        - name: MAIL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: MAIL_USERNAME
+        - name: MAIL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: careertrack-secrets
+              key: MAIL_PASSWORD
+        - name: LOG_CHANNEL
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: LOG_CHANNEL
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: LOG_LEVEL
+        - name: BROADCAST_DRIVER
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: BROADCAST_DRIVER
+        - name: FILESYSTEM_DISK
+          valueFrom:
+            configMapKeyRef:
+              name: careertrack-config
+              key: FILESYSTEM_DISK
+        volumeMounts:
+        - name: app-storage
+          mountPath: /var/www/html/storage
+        - name: app-bootstrap
+          mountPath: /var/www/html/bootstrap/cache
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: app-storage
+        persistentVolumeClaim:
+          claimName: careertrack-storage-pvc
+      - name: app-bootstrap
+        emptyDir: {}
+      imagePullSecrets:
+      - name: careertrack-registry-secret  # If using private registry
